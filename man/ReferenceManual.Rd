@@ -6,10 +6,10 @@
 \usage{
 ReferenceManual(pkg = getwd(), outdir = getwd(), front.matter = "",
   toc.matter = "<!-- toc -->", date.format = "\%B \%d, \%Y",
-  verbose = FALSE)
+  verbose = FALSE, section.level = 1, subsection.level = 2)
 }
 \arguments{
-\item{pkg}{Full path to package directory. Default value is the working directory. 
+\item{pkg}{Full path to package directory. Default value is the working directory.
 Alternatively, a package name can be passed. If this is the case, \code{\link[base]{find.package}} is applied.}
 
 \item{outdir}{Output directory where the reference manual markdown shall be written to.}
@@ -20,14 +20,18 @@ Alternatively, a package name can be passed. If this is the case, \code{\link[ba
 The default value is a HTML comment, used by gitbook plugin
 \href{https://www.npmjs.com/package/gitbook-plugin-toc}{toc}.}
 
-\item{date.format}{Date format that shall be written to the beginning of the reference manual. 
+\item{date.format}{Date format that shall be written to the beginning of the reference manual.
 If \code{NULL}, no date is written.
 Otherwise, provide a valid format (e.g. \code{\%Y-\%m-\%d}), see Details in \link[base]{strptime}.}
 
 \item{verbose}{If \code{TRUE} all messages and process steps will be printed}
+
+\item{section.level}{Integer.  Section header level.}
+
+\item{subsection.level}{Integer. Subsection header level.}
 }
 \description{
-This is a wrapper to combine the Rd files of a package source or binary 
+This is a wrapper to combine the Rd files of a package source or binary
 into a reference manual in markdown format.
 }
 \examples{
