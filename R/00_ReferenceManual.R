@@ -36,7 +36,8 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 					, date.format = "%B %d, %Y"
 					, verbose = FALSE
 					, section.level = 1
-					, subsection.level = 2) {
+					, subsection.level = 2
+			                , run.examples = FALSE) {
 	# VALIDATION
 	pkg <- as.character(pkg)
 	if (length(pkg) != 1) stop("Please provide only one package at a time.")
@@ -107,7 +108,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 	# Parse rd files and add to ReferenceManual
 	for(i in 1:length(topics)) {#i=1
 		if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-		results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header)
+		results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
 	}
 
 }
