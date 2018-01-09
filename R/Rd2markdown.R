@@ -15,7 +15,7 @@
 #' outfile = "/var/www/html/R_Web_app/md/myfun.md"
 #' ## create markdown
 #' ## Rd2markdown(rdfile = rdfile, outfile = outfile)
-Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##") {
+Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE) {
 	# VALIDATION
 	append = as.logical(append)
 	if (length(append) != 1) stop("Please provide append as single logical value.")
@@ -30,7 +30,6 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 	# Global definitions for file parsing
 	file.ext <- "md"
 	section.sep <- "\n\n"
-	run.examples <- FALSE
 
 
 	# Parse rd file
@@ -68,7 +67,12 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 					cat(section.sep, file=outfile, append=TRUE)
 
 				# EXAMPLES
-				cat("```r", paste(results$examples, collapse="\n"), "```", "\n\n", file=outfile, append=TRUE)
+				  if (run.examples) {
+					  cat("```{r}")
+				  } else {
+					cat("```r")	  
+				  }  
+				cat(paste(results$examples, collapse="\n"), "```", "\n\n", file=outfile, append=TRUE)
 				} else if (i %in% c("usage")) {
 					cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
 					cat(section.sep, file=outfile, append=TRUE)
