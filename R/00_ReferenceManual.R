@@ -21,6 +21,8 @@
 #' @param verbose If \code{TRUE} all messages and process steps will be printed
 #' @param section.level Integer.  Section header level.
 #' @param subsection.level Integer. Subsection header level.
+#' @param run.examples Logical. Whether or not to run examples.
+#' @param skip.topics Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.
 #' @references Murdoch, D. (2010). \href{http://developer.r-project.org/parseRd.pdf}{Parsing Rd files}
 #' @seealso Package \href{https://github.com/jbryer/Rd2markdown}{Rd2markdown} by jbryer
 #' @examples
@@ -37,7 +39,8 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 					, verbose = FALSE
 					, section.level = 1
 					, subsection.level = 2
-			                , run.examples = FALSE) {
+			    , run.examples = FALSE
+					, skip.topics = NULL) {
 	# VALIDATION
 	pkg <- as.character(pkg)
 	if (length(pkg) != 1) stop("Please provide only one package at a time.")
@@ -100,6 +103,9 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 	if (type == "src") {
 		rd_files <- list.files(file.path(pkg_path, mandir), full.names = TRUE)
 		topics <- gsub(".rd","",gsub(".Rd","",basename(rd_files)))
+		v <- which(!(topics %in% skip.topics))
+		topics <- topics[v]
+		rd_files <- rd_files[v]
 	} else {
 		rd_files <- fetchRdDB(file.path(pkg_path, mandir, pkg_name))
 		topics <- names(rd_files)
