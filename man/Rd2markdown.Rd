@@ -5,7 +5,7 @@
 \title{Rd file to markdown}
 \usage{
 Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
-  subsection = "##")
+  subsection = "##", run.examples = FALSE)
 }
 \arguments{
 \item{rdfile}{Filepath to an .Rd file or an \code{Rd} object to parse.}

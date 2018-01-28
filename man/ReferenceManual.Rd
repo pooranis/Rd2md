@@ -6,7 +6,8 @@
 \usage{
 ReferenceManual(pkg = getwd(), outdir = getwd(), front.matter = "",
   toc.matter = "<!-- toc -->", date.format = "\%B \%d, \%Y",
-  verbose = FALSE, section.level = 1, subsection.level = 2)
+  verbose = FALSE, title.level = 1, run.examples = FALSE,
+  skip.topics = NULL, sepexported = FALSE)
 }
 \arguments{
 \item{pkg}{Full path to package directory. Default value is the working directory.
@@ -26,9 +27,16 @@ Otherwise, provide a valid format (e.g. \code{\%Y-\%m-\%d}), see Details in \lin
 
 \item{verbose}{If \code{TRUE} all messages and process steps will be printed}
 
-\item{section.level}{Integer.  Section header level.}
+\item{title.level}{Integer.  Title header level. If including exported sections, section.level will be one
+more, and subsection level 2 more.  Otherwise, section.level will be the same and subsection.level only one
+more.}
 
-\item{subsection.level}{Integer. Subsection header level.}
+\item{run.examples}{Logical. Whether or not to run examples.}
+
+\item{skip.topics}{Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.}
+
+\item{sepxported}{Logical. Separate exported and internal objects. Exported objects should each have their own
+.rd file}
 }
 \description{
 This is a wrapper to combine the Rd files of a package source or binary
@@ -41,6 +49,7 @@ pkg_dir = "~/git/MyPackage"
 out_dir = "/var/www/html/R_Web_app/md/"
 ## create reference manual
 ## ReferenceManual(pkg = pkg_dir, outdir = out_dir)
+
 }
 \references{
 Murdoch, D. (2010). \href{http://developer.r-project.org/parseRd.pdf}{Parsing Rd files}

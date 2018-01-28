@@ -24,7 +24,8 @@
 #' more.
 #' @param run.examples Logical. Whether or not to run examples.
 #' @param skip.topics Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.
-#' @param sepxported Logical. Separate exported and internal objects.
+#' @param sepxported Logical. Separate exported and internal objects. Exported objects should each have their own
+#' .rd file
 #' @references Murdoch, D. (2010). \href{http://developer.r-project.org/parseRd.pdf}{Parsing Rd files}
 #' @seealso Package \href{https://github.com/jbryer/Rd2markdown}{Rd2markdown} by jbryer
 #' @examples
