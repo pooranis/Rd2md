@@ -1,6 +1,6 @@
 #' @name parseTag
 #' @title Tag from Rd Format to Markdown
-#' @description This function will convert an Rd element to markdown format. 
+#' @description This function will convert an Rd element to markdown format.
 #' Note that links are only supported within a markdown document, referenced with #.
 #' Use \code{href} to link to external sources.
 #' @param x element from an \code{Rd} class.
@@ -16,7 +16,7 @@ parseTag <- function(x
 							, stripWhite=TRUE
 							, stripTab=TRUE
 							) {
-								
+
 	rdtag <- attr(x, "Rd_tag")
 	if (is.null(rdtag) || rdtag %in% c("TEXT", "RCODE", "VERB")) {
 		x <- paste0(pre, as.character(x), post)
@@ -31,7 +31,7 @@ parseTag <- function(x
 		# message(paste0("Equation used, be sure to include MathJax."))
 		pre <- c("$", pre)
 		post <- c(post, "$")
-		x <- paste0(parseTag(x[[1]], pre, post, stripWhite=TRUE, 
+		x <- paste0(parseTag(x[[1]], pre, post, stripWhite=TRUE,
 							 stripNewline=TRUE, stripTab=TRUE), collapse="")
 	} else if (rdtag == "\\deqn") {
 		message(paste0("Equation used, be sure to include MathJax."))
@@ -39,11 +39,11 @@ parseTag <- function(x
 		post <- c(post, "$$\n")
 		x <- paste0("\n$$", paste0(parseTag(x[[1]]), collapse=""), "$$\n")
 	} else if (rdtag == "\\link") {
-		if (attr(x[[1]], "Rd_tag") != "TEXT") { 
+		if (attr(x[[1]], "Rd_tag") != "TEXT") {
 			warning("\\link is not the inner most tag. All other nested tags will be ignored.")
 		}
 		# only internal markdown links, referenced with #
-		x <- paste0("[", pre, parseTag(x[[1]], stripNewline=stripNewline), post, "](#", 
+		x <- paste0("[", pre, parseTag(x[[1]], stripNewline=stripNewline), post, "](#",
 			gsub(" ", "_", gsub("_", "", tolower(parseTag(x[[1]], stripNewline=stripNewline)))), ")")
 	} else if (rdtag == "\\url") {
 		x <- paste0("[", pre, as.character(x), post, "](", as.character(x), ")")
@@ -57,6 +57,6 @@ parseTag <- function(x
 		warning("enumerate not currently supported. Items will be bulleted instead.")
 		x <- paste(sapply(x, parseTag), collapse=" ")
 	}
-	
+
 	return(x)
 }

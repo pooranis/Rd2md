@@ -6,23 +6,23 @@
 #' @param rd An \code{Rd} object.
 #' @return a named list with the parts of the Rd object that will be used for creating
 #' a markdown file
-#' @examples 
+#' @examples
 #' ## rd source (from parse_Rd function of tools package)
 #' rdfile = "~/git/MyPackage/man/myfun.Rd"
 #' ## rd = tools::parse_Rd(rdfile)
 #' ## parseRd(rd)
 parseRd <- function(rd) {
-	
+
 	# VALIDATION
 	if (!("Rd" %in% class(rd))) stop("Please provide Rd object to parse.")
-	
+
 	tags <- RdTags(rd)
 	results <- list()
-	
+
 	if(!('\\name' %in% tags)) {
 		return(results)
 	}
-	
+
 	for (i in sections) {
 		if (i %in% tags) {
 			# Handle \argument section separately
@@ -33,19 +33,19 @@ parseRd <- function(rd) {
 				params <- character()
 				for(i in seq_along(args)) {
 					param.name <- as.character(args[[i]][[1]])
-					param.desc <- paste(sapply(args[[i]][[2]], 
+					param.desc <- paste(sapply(args[[i]][[2]],
 							FUN=function(x) { parseTag(x) }), collapse=' ')
 					params <- c(params, param.desc)
 					names(params)[length(params)] <- param.name
 				}
 				results$arguments <- params
 			} else if (i %in% c('\\usage')) {
-				results[['usage']] <- paste0("```r\n", 
-						paste(sapply(rd[[which(tags == '\\usage')]], 
+				results[['usage']] <- paste0("```r\n",
+						paste(sapply(rd[[which(tags == '\\usage')]],
 							   FUN=function(x) {
 									if (x[1]=="\n") x[1]="" # exception handling
 							   	parseTag(x, stripNewline=FALSE, stripWhite=FALSE, stripTab=FALSE)
-							   }), collapse=''), 
+							   }), collapse=''),
 					 "```\n")
 			} else if (i %in% tags) {
 				key <- substr(i, 2, nchar(i))
@@ -55,6 +55,6 @@ parseRd <- function(rd) {
 			}
 		}
 	}
-	
+
 	invisible(results)
 }
