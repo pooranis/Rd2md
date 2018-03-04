@@ -47,6 +47,12 @@ parseRd <- function(rd) {
 							   	parseTag(x, stripNewline=FALSE, stripWhite=FALSE, stripTab=FALSE)
 							   }), collapse=''),
 					 "```\n")
+			} else if (i == '\\docType') {
+        dt <- rd[[which(tags == '\\docType')]]
+        if (dt == 'package') {
+          name <- rd[[which(tags == '\\name')]]
+          rd[[which(tags == '\\name')]] <- paste0(trimws(name), '-package')
+        }
 			} else if (i %in% tags) {
 				key <- substr(i, 2, nchar(i))
 				results[[key]] <- paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
