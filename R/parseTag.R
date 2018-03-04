@@ -56,6 +56,10 @@ parseTag <- function(x
 	} else if (rdtag == "\\enumerate") {
 		warning("enumerate not currently supported. Items will be bulleted instead.")
 		x <- paste(sapply(x, parseTag), collapse=" ")
+	} else if (rdtag == "\\dontrun") {
+	  x <- sapply(x, parseTag)
+	  x <- paste("## Not run:", paste(x, collapse = "\n"), "\n## End(Not run)", collapse=" ")
+
 	}
 
 	return(x)
