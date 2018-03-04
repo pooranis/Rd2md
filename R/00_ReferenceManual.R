@@ -155,6 +155,6 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 
   }
 
-
+  invisible(man_file)
 
 }
