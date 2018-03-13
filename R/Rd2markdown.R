@@ -70,7 +70,7 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 				  if (run.examples) {
 					  cat("```{r}", file=outfile, append=TRUE)
 				  } else {
-					  cat("```r", file=outfile, append=TRUE)
+					  cat("```{r, eval=FALSE}", file=outfile, append=TRUE)
 				  }
 				  cat(paste0(results$examples), "```", "\n\n", file=outfile, append=TRUE, sep="")
 				} else if (i %in% c("usage")) {
