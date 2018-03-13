@@ -13,11 +13,11 @@ sections <- c('\\arguments', '\\author', '\\concept', '\\description',
 			  '\\details', '\\docType', '\\encoding', '\\format', '\\keyword', '\\name',
 			  '\\note', '\\references', '\\section', '\\seealso', '\\source', '\\title',
 			  '\\value', '\\examples', '\\usage', '\\alias', '\\Rdversion', '\\synopsis',
-			  '\\Sexpr', '\\RdOpts' )
+			  '\\Sexpr', '\\RdOpts', '\\source' )
 
-sections.print <- c('name', 'title', 'description', 'format', 'usage', 'arguments', 
-					'details', 'value', 'seealso', 'note', 'author', 
-					'references', 'examples')
+sections.print <- c('name', 'title', 'description', 'format', 'usage', 'arguments',
+					'details', 'value', 'seealso', 'note', 'author',
+					'references', 'examples', 'source')
 
 markups.latex <- c('\\acronym', '\\bold', '\\cite', '\\command', '\\dfn',
 				   '\\dQuote', '\\email', '\\emph', '\\file', '\\item', '\\linkS4class',
