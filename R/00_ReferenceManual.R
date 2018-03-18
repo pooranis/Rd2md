@@ -102,7 +102,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   cat("```\n", file=man_file, append=TRUE)
   DESCRIPTION = readLines(file.path(pkg_path, "DESCRIPTION"))
   cat(paste0(DESCRIPTION, collapse="\n"), file=man_file, append=TRUE)
-  cat("```\n", file=man_file, append=TRUE)
+  cat("\n```\n", file=man_file, append=TRUE)
   cat(section.sep, file=man_file, append=TRUE)
 
   # RD files
