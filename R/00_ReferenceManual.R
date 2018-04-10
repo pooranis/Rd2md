@@ -26,6 +26,8 @@
 #' @param skip.topics Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.
 #' @param sepxported Logical. Separate exported and internal objects. Exported objects should each have their own
 #' .rd file
+#' @param man_file Character. name of output file.  Default Reference_Manual_pkgname.md
+#'
 #' @references Murdoch, D. (2010). \href{http://developer.r-project.org/parseRd.pdf}{Parsing Rd files}
 #' @seealso Package \href{https://github.com/jbryer/Rd2markdown}{Rd2markdown} by jbryer
 #' @examples
@@ -36,6 +38,10 @@
 #' ## create reference manual
 #' ## ReferenceManual(pkg = pkg_dir, outdir = out_dir)
 #'
+#' @importFrom utils capture.output
+#' @importFrom desc desc_print
+#'
+#'
 ReferenceManual <- function(pkg = getwd(), outdir = getwd()
                             , front.matter = ""
                             , toc.matter = "<!-- toc -->"
@@ -44,7 +50,8 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
                             , title.level = 1
                             , run.examples = FALSE
                             , skip.topics = NULL
-                            , sepexported = FALSE) {
+                            , sepexported = FALSE
+                            , man_file = NULL) {
   # VALIDATION
   pkg <- as.character(pkg)
   if (length(pkg) != 1) stop("Please provide only one package at a time.")
@@ -78,7 +85,11 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 
 
   # Output file for reference manual
-  man_file <- file.path(outdir, paste0("Reference_Manual_", pkg_name, ".md"))
+  if (is.null(man_file)) {
+    man_file <- file.path(outdir, paste0("Reference_Manual_", pkg_name, ".md"))
+  } else {
+    man_file <- file.path(outdir,man_file)
+  }
 
   # INIT REFERENCE MANUAL .md
   cat(front.matter, file=man_file, append=FALSE) # yaml
@@ -100,7 +111,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   cat(title.header, " DESCRIPTION", file=man_file, append=TRUE)
   cat(section.sep, file=man_file, append=TRUE)
   cat("```\n", file=man_file, append=TRUE)
-  DESCRIPTION = readLines(file.path(pkg_path, "DESCRIPTION"))
+  DESCRIPTION = capture.output(desc_print((file.path(pkg_path, "DESCRIPTION"))))
   cat(paste0(DESCRIPTION, collapse="\n"), file=man_file, append=TRUE)
   cat("\n```\n", file=man_file, append=TRUE)
   cat(section.sep, file=man_file, append=TRUE)

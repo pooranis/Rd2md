@@ -21,7 +21,7 @@ parseTag(x, pre = character(), post = character(), stripNewline = TRUE,
 \item{stripTab}{Logical indicating whether to strip tab characters.}
 }
 \description{
-This function will convert an Rd element to markdown format. 
+This function will convert an Rd element to markdown format.
 Note that links are only supported within a markdown document, referenced with #.
 Use \code{href} to link to external sources.
 }

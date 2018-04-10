@@ -7,7 +7,7 @@
 ReferenceManual(pkg = getwd(), outdir = getwd(), front.matter = "",
   toc.matter = "<!-- toc -->", date.format = "\%B \%d, \%Y",
   verbose = FALSE, title.level = 1, run.examples = FALSE,
-  skip.topics = NULL, sepexported = FALSE)
+  skip.topics = NULL, sepexported = FALSE, man_file = NULL)
 }
 \arguments{
 \item{pkg}{Full path to package directory. Default value is the working directory.
@@ -34,6 +34,8 @@ more.}
 \item{run.examples}{Logical. Whether or not to run examples.}
 
 \item{skip.topics}{Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.}
+
+\item{man_file}{Character. name of output file.  Default Reference_Manual_pkgname.md}
 
 \item{sepxported}{Logical. Separate exported and internal objects. Exported objects should each have their own
 .rd file}
