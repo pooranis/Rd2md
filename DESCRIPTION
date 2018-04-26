@@ -7,7 +7,8 @@ Depends:
     R (>= 3.2.3)
 Imports:
 		knitr,
-		tools
+		tools,
+		desc
 Suggests:
 		testthat,
     rmarkdown,
