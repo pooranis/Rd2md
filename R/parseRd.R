@@ -19,33 +19,35 @@ parseRd <- function(rd) {
 	tags <- RdTags(rd)
 	results <- list()
 
-	if(!('\\name' %in% tags)) {
+	if(!("\\name" %in% tags)) {
 		return(results)
 	}
 
 	for (i in sections) {
 		if (i %in% tags) {
 			# Handle \argument section separately
-			if (i == '\\arguments') {
-				args <- rd[[which(tags == '\\arguments')]]
+			if (i == "\\arguments") {
+				args <- rd[[which(tags == "\\arguments")]]
 				args.tags <- RdTags(args)
-				args <- args[which(args.tags == '\\item')]
+				args <- args[which(args.tags == "\\item")]
 				params <- character()
 				for(i in seq_along(args)) {
 					param.name <- as.character(args[[i]][[1]])
 					param.desc <- paste(sapply(args[[i]][[2]],
-							FUN=function(x) { parseTag(x) }), collapse=' ')
+							FUN=function(x) { parseTag(x) }), collapse=" ")
 					params <- c(params, param.desc)
 					names(params)[length(params)] <- param.name
 				}
 				results$arguments <- params
-			} else if (i %in% c('\\usage')) {
-				results[['usage']] <- paste0("```{r, eval=FALSE}\n",
-						paste(sapply(rd[[which(tags == '\\usage')]],
+
+			} else if (i %in% c("\\usage")) {
+				results[["usage"]] <- paste0("```{r, eval=FALSE}\n",
+						trim(paste(sapply(rd[[which(tags == "\\usage")]],
 							   FUN=function(x) {
-									if (x[1]=="\n") x[1]="" # exception handling
+									if (x[1]=="\n") x[1] <- "" # exception handling
 							   	parseTag(x, stripNewline=FALSE, stripWhite=FALSE, stripTab=FALSE)
-							   }), collapse=''),
+
+							   }), collapse='')),
 					 "```\n")
 			} else if (i == '\\docType') {
         dt <- rd[[which(tags == '\\docType')]]
@@ -53,11 +55,18 @@ parseRd <- function(rd) {
           name <- rd[[which(tags == '\\name')]]
           rd[[which(tags == '\\name')]] <- paste0(trimws(name), '-package')
         }
+
+			} else if (i %in% c("\\examples", "\\example")) {
+			  key <- substr(i, 2, nchar(i))
+			  results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
+			    parseTag(x, stripNewline=FALSE)
+			  } ), collapse=""))
+
 			} else if (i %in% tags) {
 				key <- substr(i, 2, nchar(i))
-				results[[key]] <- paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
-					parseTag(x, stripNewline=FALSE)
-				} ), collapse=' ')
+				results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
+				  parseTag(x, stripNewline=FALSE)
+				} ), collapse=" "))
 			}
 		}
 	}

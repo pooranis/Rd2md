@@ -23,6 +23,10 @@ parseTag <- function(x
 		if (stripTab) { x <- gsub("\t", "", x)}
 		if (stripNewline) { x <- gsub("\n", "", x) }
 		if (stripWhite) { x <- stripWhite(x) }
+	} else if (rdtag == "\\dontrun") {
+	  x <- trim(paste(sapply(x, FUN=function(x) {
+	    parseTag(x, stripNewline=FALSE)
+	  } ), collapse=""))
 	} else if (rdtag == "\\code") {
 		pre <- c("`", pre)
 		post <- c(post, "`")
@@ -69,4 +73,5 @@ parseTag <- function(x
 	}
 
 	return(x)
+
 }

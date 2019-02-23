@@ -17,15 +17,16 @@
 #' ## Rd2markdown(rdfile = rdfile, outfile = outfile)
 Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE) {
 	# VALIDATION
-	append = as.logical(append)
+	append <- as.logical(append)
 	if (length(append) != 1) stop("Please provide append as single logical value.")
 	if (is.character(rdfile)) if ((length(rdfile) != 1)) stop("Please provide rdfile as single character value (file path with extension).")
-	outfile = as.character(outfile)
+	outfile <- as.character(outfile)
 	if (length(outfile) != 1) stop("Please provide outfile as single character value (file path with extension).")
 	if (append) {
 		if (!file.exists(outfile)) stop("If append=TRUE, the outfile must exists already.")
 	}
-	type = ifelse(inherits(rdfile, "Rd"), "bin", "src")
+
+	type <- ifelse(inherits(rdfile, "Rd"), "bin", "src")
 
 	# Global definitions for file parsing
 	file.ext <- "md"
@@ -54,9 +55,9 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 		cat("", file=outfile, append=append)
 
 		# HEADING
-		cat(paste0(section, " `", results$name, "`"), file=outfile, append=TRUE)
-		cat(section.sep, file=outfile, append=TRUE)
+		cat(paste0(section, " `", results$name, "`"), section.sep, file=outfile, append=TRUE, sep="")
 		# title as normal text
+<<<<<<< HEAD
 		cat(results$title, file=outfile, append=TRUE)
 		cat(section.sep, file=outfile, append=TRUE)
 
@@ -88,11 +89,9 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 					cat(section.sep, file=outfile, append=TRUE)
 
 				} else {
-					cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
-					cat(results[[i]], file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
+					cat(paste0(results[[i]], collapse="\n"), file=outfile, append=TRUE, sep="\n")
 				}
+			  cat(section.sep, file=outfile, append=TRUE)
 			}
 		}
 	} else {

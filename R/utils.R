@@ -3,7 +3,7 @@
 #' @param x character to strip white space from
 #' @return a character with white space stripped
 stripWhite <- function(x) {
-	sub('([ ]+$)', '', sub("(^[ ]+)", '', x, perl=TRUE), perl=TRUE)
+	sub("([ ]+$)", "", sub("(^[ ]+)", "", x, perl=TRUE), perl=TRUE)
 }
 
 #' @title Extract Rd tags
@@ -56,5 +56,13 @@ fetchRdDB <- function (filebase, key = NULL) {
   if (length(key)) 
     res
   else invisible(res)
+}
+
+#' @title Trim
+#' @description Trim whitespaces and newlines before and after
+#' @param x String to trim
+#' @return character vector with stripped whitespaces
+trim <- function(x) {
+  gsub("^\\s+|\\s+$", "", x)
 }
 
