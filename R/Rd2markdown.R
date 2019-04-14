@@ -57,7 +57,6 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 		# HEADING
 		cat(paste0(section, " `", results$name, "`"), section.sep, file=outfile, append=TRUE, sep="")
 		# title as normal text
-<<<<<<< HEAD
 		cat(results$title, file=outfile, append=TRUE)
 		cat(section.sep, file=outfile, append=TRUE)
 
