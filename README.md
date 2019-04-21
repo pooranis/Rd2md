@@ -30,3 +30,7 @@ ReferenceManual(pkg, outdir)
 ```
 
 Please read the introduction vignette for further information and consult the available function docs.
+
+# Meta!
+
+[Reference Manual for Rd2md package](Referend_Manual_Rd2md.md)
