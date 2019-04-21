@@ -5,8 +5,10 @@
 #' @param rdfile Filepath to an .Rd file or an \code{Rd} object to parse.
 #' @param outfile Filepath to output file (markdown file).
 #' @param append If outfile exists, append to existing content.
-#' @param Section header tag.
-#' @param Subsection header tag.
+#' @param section header tag.
+#' @param subsection header tag.
+#' @param run.examples logical. should examples be run?
+#' @param Rmd logical. should the output be in Rmarkdown format or regular markdown? default: TRUE, rmarkdown
 #' @return Parsed Rd as named list
 #' @examples
 #' ## give a markdown source file
@@ -15,7 +17,7 @@
 #' outfile = "/var/www/html/R_Web_app/md/myfun.md"
 #' ## create markdown
 #' ## Rd2markdown(rdfile = rdfile, outfile = outfile)
-Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE) {
+Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE,Rmd=T) {
 	# VALIDATION
 	append <- as.logical(append)
 	if (length(append) != 1) stop("Please provide append as single logical value.")
@@ -60,6 +62,8 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 		cat(results$title, file=outfile, append=TRUE)
 		cat(section.sep, file=outfile, append=TRUE)
 
+		if (identical(results$description, results$title)) results$description <- NULL
+
 		for (i in sections.print[!sections.print %in% c("name","title")]) {
 			if (i %in% names(results)) {
 				if (i == "examples") {
@@ -68,16 +72,24 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 
 				# EXAMPLES
 				  if (run.examples) {
-					  cat("```{r}", file=outfile, append=TRUE)
+					  cat("```{r}\n", file=outfile, append=TRUE)
+				  } else if (Rmd) {
+					  cat("```{r, eval=FALSE}\n", file=outfile, append=TRUE)
 				  } else {
-					  cat("```{r, eval=FALSE}", file=outfile, append=TRUE)
+				    cat("```r\n", file=outfile, append=TRUE)
 				  }
-				  cat(paste0(results$examples), "```", "\n\n", file=outfile, append=TRUE, sep="")
+				  cat(paste0(results$examples), "\n```", "\n\n", file=outfile, append=TRUE, sep="")
 				} else if (i %in% c("usage")) {
 					cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
 					cat(section.sep, file=outfile, append=TRUE)
+					if (Rmd) {
+					  cat("```{r, eval=FALSE}\n",file=outfile, append=TRUE)
+					} else {
+					  cat("```r\n",file=outfile, append=TRUE)
+					}
 					cat(paste0(results[[i]]), file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
+					cat("\n```\n", file=outfile, append=T)
+#					cat(section.sep, file=outfile, append=TRUE)
 				} else if (i %in% c("arguments")) {
 					cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
 					cat(section.sep, file=outfile, append=TRUE)
@@ -85,14 +97,16 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 					cat("Argument      |Description\n", file=outfile, append=TRUE)
 					cat("------------- |----------------\n", file=outfile, append=TRUE)
 					cat(paste0("`", names(results[[i]]), "`", "     |     ", results[[i]], collapse="\n"), file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
 
 				} else {
+				  cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
+				  cat(section.sep, file=outfile, append=TRUE)
 					cat(paste0(results[[i]], collapse="\n"), file=outfile, append=TRUE, sep="\n")
 				}
 			  cat(section.sep, file=outfile, append=TRUE)
 			}
 		}
+		cat(section.sep, file=outfile, append=TRUE)
 	} else {
 		warning("name and title are required. Not creating markdown file")
 	}

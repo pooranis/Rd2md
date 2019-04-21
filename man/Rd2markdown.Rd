@@ -5,7 +5,7 @@
 \title{Rd file to markdown}
 \usage{
 Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
-  subsection = "##", run.examples = FALSE)
+  subsection = "##", run.examples = FALSE, Rmd = T)
 }
 \arguments{
 \item{rdfile}{Filepath to an .Rd file or an \code{Rd} object to parse.}
@@ -14,9 +14,13 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 
 \item{append}{If outfile exists, append to existing content.}
 
-\item{Section}{header tag.}
+\item{section}{header tag.}
 
-\item{Subsection}{header tag.}
+\item{subsection}{header tag.}
+
+\item{run.examples}{logical. should examples be run?}
+
+\item{Rmd}{logical. should the output be in Rmarkdown format or regular markdown? default: TRUE, rmarkdown}
 }
 \value{
 Parsed Rd as named list

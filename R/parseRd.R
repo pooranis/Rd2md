@@ -41,14 +41,12 @@ parseRd <- function(rd) {
 				results$arguments <- params
 
 			} else if (i %in% c("\\usage")) {
-				results[["usage"]] <- paste0("```{r, eval=FALSE}\n",
-						trim(paste(sapply(rd[[which(tags == "\\usage")]],
+				results[["usage"]] <- paste0(trim(paste(sapply(rd[[which(tags == "\\usage")]],
 							   FUN=function(x) {
 									if (x[1]=="\n") x[1] <- "" # exception handling
 							   	parseTag(x, stripNewline=FALSE, stripWhite=FALSE, stripTab=FALSE)
 
-							   }), collapse='')),
-					 "```\n")
+							   }), collapse='')))
 			} else if (i == '\\docType') {
         dt <- rd[[which(tags == '\\docType')]]
         if (dt == 'package') {
