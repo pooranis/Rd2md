@@ -33,4 +33,4 @@ Please read the introduction vignette for further information and consult the av
 
 # Meta!
 
-[Reference Manual for Rd2md package](Referend_Manual_Rd2md.md)
+[Reference Manual for Rd2md package](Reference_Manual_Rd2md.md)
