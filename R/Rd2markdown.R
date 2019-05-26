@@ -8,7 +8,7 @@
 #' @param section header tag.
 #' @param subsection header tag.
 #' @param run.examples logical. should examples be run?
-#' @param Rmd logical. should the output be in Rmarkdown format or regular markdown? default: TRUE, rmarkdown
+#' @param Rmd logical. should the output be in Rmarkdown format or regular markdown? default: FALSE, regular markdown
 #' @return Parsed Rd as named list
 #' @examples
 #' ## give a markdown source file
@@ -17,7 +17,7 @@
 #' outfile = "/var/www/html/R_Web_app/md/myfun.md"
 #' ## create markdown
 #' ## Rd2markdown(rdfile = rdfile, outfile = outfile)
-Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE,Rmd=T) {
+Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE,Rmd=F) {
 	# VALIDATION
 	append <- as.logical(append)
 	if (length(append) != 1) stop("Please provide append as single logical value.")
