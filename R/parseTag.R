@@ -31,6 +31,14 @@ parseTag <- function(x
 		pre <- c("`", pre)
 		post <- c(post, "`")
 		x <- parseTag(x[[1]], pre, post)
+	} else if (rdtag == "\\emph") {
+	  pre <- c("*", pre)
+	  post <- c(post, "*")
+	  x <- parseTag(x[[1]], pre, post)
+	} else if (rdtag == "\\strong") {
+	  pre <- c("**", pre)
+	  post <- c(post, "**")
+	  x <- parseTag(x[[1]], pre, post)
 	} else if (rdtag == "\\eqn") {
 		# message(paste0("Equation used, be sure to include MathJax."))
 		pre <- c("$", pre)
