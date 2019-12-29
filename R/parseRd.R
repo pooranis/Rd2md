@@ -51,7 +51,10 @@ parseRd <- function(rd) {
         dt <- rd[[which(tags == '\\docType')]]
         if (dt == 'package') {
           name <- rd[[which(tags == '\\name')]]
-          rd[[which(tags == '\\name')]] <- paste0(trimws(name), '-package')
+          if (!grepl("-package$", rd[[which(tags == '\\name')]], perl = T)) {
+            rd[[which(tags == '\\name')]] <- paste0(trimws(name), '-package')
+          }
+
         }
 
 			} else if (i %in% c("\\examples", "\\example")) {
