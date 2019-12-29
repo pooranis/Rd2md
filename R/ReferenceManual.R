@@ -6,6 +6,7 @@
 #' @param pkg Full path to package directory. Default value is the working directory.
 #' Alternatively, a package name can be passed. If this is the case, \code{\link[base]{find.package}} is applied.
 #' @param outdir Output directory where the reference manual markdown shall be written to.
+#' @param man_file Character. name of output file.  Default Reference_Manual_pkgname.md
 #' @param front.matter String with yaml-style heading of markdown file.
 #' @param toc.matter String providing the table of contents. This is not auto-generated.
 #' The default value is a HTML comment, used by gitbook plugin
@@ -18,10 +19,12 @@
 #' more, and subsection level 2 more.  Otherwise, section.level will be the same and subsection.level only one
 #' more.
 #' @param run.examples Logical. Whether or not to run examples.
-#' @param skip.topics Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.
-#' @param sepxported Logical. Separate exported and internal objects. Exported objects should each have their own
-#' .rd file
-#' @param man_file Character. name of output file.  Default Reference_Manual_pkgname.md
+#' @param skip.topics Character. Functions, methods, objects, etc to skip.  Should be prefix of
+#' .rd file.
+#' @param topic.groups Named list of vectors of topics in each topic group.  The group names should be
+#'  the names of the list.
+#' @param sepxported Logical. Separate exported and internal objects. Sets \code{topic.groups} to be
+#' "Exported" and "Internal"
 #'
 #' @references Murdoch, D. (2010). \href{http://developer.r-project.org/parseRd.pdf}{Parsing Rd files}
 #' @seealso Package \href{https://github.com/jbryer/Rd2markdown}{Rd2markdown} by jbryer
@@ -40,6 +43,7 @@
 #'
 #'
 ReferenceManual <- function(pkg = getwd(), outdir = getwd()
+                            , man_file = NULL
                             , front.matter = ""
                             , toc.matter = "<!-- toc -->"
                             , date.format = "%B %d, %Y"
@@ -47,15 +51,16 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
                             , title.level = 1
                             , run.examples = FALSE
                             , skip.topics = NULL
-                            , sepexported = FALSE
-                            , man_file = NULL) {
+                            , topic.groups = NULL
+                            , sepexported = FALSE) {
   # VALIDATION
   pkg <- as.character(pkg)
   if (length(pkg) != 1) stop("Please provide only one package at a time.")
   outdir <- as.character(outdir)
   if (length(outdir) != 1) stop("Please provide only one outdir at a time.")
   if (!dir.exists(outdir)) stop("Output directory path does not exist.")
-  verbose <- as.logical(verbose)
+  opts <- options(verbose = verbose)
+  on.exit(options(opts))
 
   # locate package
   pkg_path <- path.expand(pkg)
@@ -74,7 +79,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   # PARAMS
   section.sep <- "\n\n"
   title.header = paste0(rep("#", title.level), collapse = "")
-  if (!sepexported) {
+  if (!sepexported && is.null(topic.groups)) {
     title.level = title.level-1
   }
   section.header = paste0(rep("#", title.level+1), collapse = "")
@@ -127,36 +132,48 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
     topics <- names(rd_files)
   }
 
+  ## if package Rd exists put it first
+  packagerd <- which(topics == paste0(pkg_name, "-package"))
+  if (length(packagerd) == 1) {
+    packagerdresults <- Rd2markdown(rdfile=rd_files[packagerd], outfile=man_file, append=TRUE, section = title.header, subsection = subsection.header, run.examples=run.examples)
+    topics <- topics[-packagerd]
+    rd_files <- rd_files[-packagerd]
+  }
+  ## Make topic group for exported and internal
   if (sepexported) {
-    cat(title.header, " Exported", file=man_file, append=TRUE)
-    cat(section.sep, file=man_file, append=TRUE)
+    topic.groups = list()
     ns <- scan(file.path(pkg_path,"NAMESPACE"), sep="\n", what = character())
-    exptopics <- unique(stringr::str_match(ns, "export.*\\((.*?)[\\,\\)]")[,2])
-    et <- which(topics %in% exptopics)
-    etopics <- topics[et]
-    erd_files <- rd_files[et]
+    topic.groups$Exported <- unique(stringr::str_match(ns, "export.*\\((.*?)[\\,\\)]")[,2])
+    topic.groups$Internal <- setdiff(topics, topic.groups$Exported)
+  }
+  ## Write out topic groups separately
+  if (!is.null(topic.groups)) {
+    topicnums <- 1:length(topics)
+    for (tgroup in names(topic.groups)) {
+      cat(title.header, " ", tgroup, file=man_file, append=TRUE)
+      cat(section.sep, file=man_file, append=TRUE)
+      tgt <- which(topics %in% topic.groups[[tgroup]])
 
-    for(i in 1:length(etopics)) {#i=1
-      if(verbose) message(paste0("Writing topic: ", etopics[i], "\n"))
-      results[[i]] <- Rd2markdown(rdfile=erd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+      for(i in tgt) {#i=1
+        if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
+        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+      }
+      topicnums <- setdiff(topicnums, tgt)
     }
-
-    cat(title.header, " Internal", file=man_file, append=TRUE)
-    cat(section.sep, file=man_file, append=TRUE)
-    it <- which(!(topics %in% exptopics))
-    itopics <- topics[it]
-    ird_files <- rd_files[it]
-
-    for(i in 1:length(itopics)) {#i=1
-      if(verbose) message(paste0("Writing topic: ", itopics[i], "\n"))
-      results[[i]] <- Rd2markdown(rdfile=ird_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+    ## Write out topics not found in any topic groups as Other
+    if (length(topicnums) > 0) {
+      cat(section.sep, file=man_file, append=TRUE)
+      cat(title.header, " Other\n", file=man_file, append=TRUE)
+      for(i in 1:length(topicnums)) {#i=1
+        if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
+        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+      }
     }
-
+  ## No groups
   } else {
 
-
     # Parse rd files and add to ReferenceManual
-    for(i in 1:length(topics)) {#i=1
+    for(i in 1:length(topics)) {
       if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
       results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
     }

@@ -4,16 +4,19 @@
 \alias{ReferenceManual}
 \title{Create Reference Manual Markdown}
 \usage{
-ReferenceManual(pkg = getwd(), outdir = getwd(), front.matter = "",
-  toc.matter = "<!-- toc -->", date.format = "\%B \%d, \%Y",
-  verbose = FALSE, title.level = 1, run.examples = FALSE,
-  skip.topics = NULL, sepexported = FALSE, man_file = NULL)
+ReferenceManual(pkg = getwd(), outdir = getwd(), man_file = NULL,
+  front.matter = "", toc.matter = "<!-- toc -->",
+  date.format = "\%B \%d, \%Y", verbose = FALSE, title.level = 1,
+  run.examples = FALSE, skip.topics = NULL, topic.groups = NULL,
+  sepexported = FALSE)
 }
 \arguments{
 \item{pkg}{Full path to package directory. Default value is the working directory.
 Alternatively, a package name can be passed. If this is the case, \code{\link[base]{find.package}} is applied.}
 
 \item{outdir}{Output directory where the reference manual markdown shall be written to.}
+
+\item{man_file}{Character. name of output file.  Default Reference_Manual_pkgname.md}
 
 \item{front.matter}{String with yaml-style heading of markdown file.}
 
@@ -33,12 +36,14 @@ more.}
 
 \item{run.examples}{Logical. Whether or not to run examples.}
 
-\item{skip.topics}{Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.}
+\item{skip.topics}{Character. Functions, methods, objects, etc to skip.  Should be prefix of
+.rd file.}
 
-\item{man_file}{Character. name of output file.  Default Reference_Manual_pkgname.md}
+\item{topic.groups}{Named list of vectors of topics in each topic group.  The group names should be
+the names of the list.}
 
-\item{sepxported}{Logical. Separate exported and internal objects. Exported objects should each have their own
-.rd file}
+\item{sepxported}{Logical. Separate exported and internal objects. Sets \code{topic.groups} to be
+"Exported" and "Internal"}
 }
 \description{
 This is a wrapper to combine the Rd files of a package source or binary
