@@ -5,7 +5,7 @@
 \title{Rd file to markdown}
 \usage{
 Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
-  subsection = "##", run.examples = FALSE, Rmd = T)
+  subsection = "##", run.examples = FALSE, Rmd = F)
 }
 \arguments{
 \item{rdfile}{Filepath to an .Rd file or an \code{Rd} object to parse.}
@@ -20,7 +20,7 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 
 \item{run.examples}{logical. should examples be run?}
 
-\item{Rmd}{logical. should the output be in Rmarkdown format or regular markdown? default: TRUE, rmarkdown}
+\item{Rmd}{logical. should the output be in Rmarkdown format or regular markdown? default: FALSE, regular markdown}
 }
 \value{
 Parsed Rd as named list
