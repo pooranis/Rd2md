@@ -60,7 +60,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   if (length(outdir) != 1) stop("Please provide only one outdir at a time.")
   if (!dir.exists(outdir)) stop("Output directory path does not exist.")
   opts <- options(verbose = verbose)
-  on.exit(options(opts))
+  on.exit(options(opts), add=T)
 
   # locate package
   pkg_path <- path.expand(pkg)
@@ -220,8 +220,17 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
   }
 
   clean <- with(list(...), get0("clean", inherits=F, ifnotfound = T))
-  if (is.null(man_file)) man_file <- paste0(gsub(".Rmd$", "", basename(rmd_man_file), perl=T, ignore.case = T), ".md")
-  man_file <- file.path(outdir,man_file)
+  if (is.null(man_file)) {
+    man_file <- paste0(gsub(".Rmd$", "", basename(rmd_man_file), perl=T, ignore.case = T), ".md")
+  } else {
+    man_file <- basename(man_file)
+  }
+
+  rmd_man_file <- normalizePath(rmd_man_file, mustWork = F)
+  wd <- getwd()
+  on.exit(setwd(wd), add=T, after=F)
+  setwd(outdir)
+
   input <- readLines(rmd_man_file)
 
   ## fix internal reference links
@@ -240,9 +249,9 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
     v1 <- grep("DESCRIPTION", input)[1]
     v2 <- grep("```", input)[2]
     date <- input[v1-2]
-    include_before <- file.path(outdir, paste0(basename(rmd_man_file), ".includes.md"))
+    include_before <- paste0(basename(rmd_man_file), ".includes.md")
     writeLines(input[(v1+1):v2], include_before)
-    on.exit(unlink(include_before))
+    on.exit(unlink(include_before), add=T, after=F)
     toc_title <- gsub("DESCRIPTION", "R topics documented:", input[v1])
     input <- input[-((v1-2):v2)]
   }
@@ -254,7 +263,7 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
   }
 
 
-  temprmd <- file.path(outdir, paste0(basename(rmd_man_file), ".temp.Rmd"))
+  temprmd <- paste0(basename(rmd_man_file), ".temp.Rmd")
   writeLines(input, temprmd)
   message("Temporary Rmd file: ", temprmd)
 
@@ -262,7 +271,7 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
     github_format <- rmarkdown::github_document(html_preview=!clean)
   } else {
     oldoptschunk <- opts_chunk$get()
-    on.exit(opts_chunk$set(oldoptschunk), add = T)
+    on.exit(opts_chunk$set(oldoptschunk), add = T, after=F)
     opts_chunk$set(knitr_opts_chunk)
     if (is.null(title)) title <- paste0("Package '", basename(pkg), "'")
     github_format <- rmarkdown::github_document(toc=toc, toc_depth = toc_depth,
@@ -275,7 +284,8 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
   }
 
   rout <- rmarkdown::render(temprmd, output_file = man_file, output_format = github_format, ...)
-
   if (clean) unlink(temprmd)
+
+  invisible(rout)
 
 }
