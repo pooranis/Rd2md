@@ -33,6 +33,7 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 	# Global definitions for file parsing
 	file.ext <- "md"
 	section.sep <- "\n\n"
+	if (grepl("\\.Rmd$", outfile, perl=T)) Rmd=T
 
 
 	# Parse rd file
@@ -72,7 +73,11 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 
 				# EXAMPLES
 				  if (run.examples) {
-					  cat("```{r}\n", file=outfile, append=TRUE)
+				    if (grepl("^## Not run:", results$examples, perl=T)) {
+				      cat("```{r, eval=FALSE}\n", file=outfile, append=TRUE)
+				    } else {
+				      cat("```{r}\n", file=outfile, append=TRUE)
+				    }
 				  } else if (Rmd) {
 					  cat("```{r, eval=FALSE}\n", file=outfile, append=TRUE)
 				  } else {
