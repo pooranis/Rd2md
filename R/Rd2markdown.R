@@ -8,7 +8,6 @@
 #' @param section header tag.
 #' @param subsection header tag.
 #' @param run.examples logical. should examples be run?
-#' @param Rmd logical. should the output be in Rmarkdown format or regular markdown? default: FALSE, regular markdown
 #' @return Parsed Rd as named list
 #' @examples
 #' ## give a markdown source file

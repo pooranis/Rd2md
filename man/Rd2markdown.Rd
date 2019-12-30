@@ -19,8 +19,6 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 \item{subsection}{header tag.}
 
 \item{run.examples}{logical. should examples be run?}
-
-\item{Rmd}{logical. should the output be in Rmarkdown format or regular markdown? default: FALSE, regular markdown}
 }
 \value{
 Parsed Rd as named list

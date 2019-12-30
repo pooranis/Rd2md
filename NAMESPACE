@@ -3,6 +3,7 @@
 export(Rd2markdown)
 export(ReferenceManual)
 export(parseRd)
+export(render_manual_github)
 import(knitr)
 import(tools)
 importFrom(desc,desc_print)

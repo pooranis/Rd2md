@@ -93,6 +93,7 @@ parseTag <- function(x,
 
 # items in lists
     } else if (rdtag == "\\item") {
+        enum <- get0("enum", ifnotfound = F, inherits = F)
         l <- ifelse(enum, "1.", "*")
         if (length(x) > 0) {
             x1 <- parseTag(x[[1]], pre = paste0("\n", l, "  `"), post = "` ", stripNewline = FALSE)
@@ -116,7 +117,7 @@ parseTag <- function(x,
         tabheader <- na.exclude(sapply(tab[tabheader_n], parseTag, emptyNA = T))
         tabheader <- c(tabheader, sapply(tabheader, function(t) ifelse(t %in% c(" | ", "\n"), t, paste0(rep("-",
             nchar(t) + 5), collapse = "")), USE.NAMES = F))
-        x <- na.exclude(c(tabheader, sapply(tab[-tabheadern], parseTag, emptyNA = T)))
+        x <- na.exclude(c(tabheader, sapply(tab[-tabheader_n], parseTag, emptyNA = T)))
         x <- paste(x, collapse = "")
 # table column separator
     } else if (rdtag == "\\tab") {

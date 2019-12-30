@@ -2,7 +2,7 @@
 
 <!-- toc -->
 
-December 29, 2019
+December 30, 2019
 
 #  DESCRIPTION
 
@@ -31,6 +31,7 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(old_usage = TRUE)
 RoxygenNote: 7.0.2
 ```
 
@@ -142,15 +143,8 @@ This function will convert an Rd element to markdown format.
 ## Usage
 
 ```r
-parseTag(
-  x,
-  pre = character(),
-  post = character(),
-  stripNewline = TRUE,
-  stripWhite = TRUE,
-  stripTab = TRUE,
-  emptyNA = FALSE
-)
+parseTag(x, pre = character(), post = character(), stripNewline = TRUE,
+  stripWhite = TRUE, stripTab = TRUE, emptyNA = FALSE)
 ```
 
 
@@ -180,15 +174,8 @@ This function converts an Rd file into markdown format.
 ## Usage
 
 ```r
-Rd2markdown(
-  rdfile,
-  outfile,
-  append = FALSE,
-  section = "#",
-  subsection = "##",
-  run.examples = FALSE,
-  Rmd = F
-)
+Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
+  subsection = "##", run.examples = FALSE, Rmd = F)
 ```
 
 
@@ -202,7 +189,6 @@ Argument      |Description
 `section`     |     header tag.
 `subsection`     |     header tag.
 `run.examples`     |     logical. should examples be run?
-`Rmd`     |     logical. should the output be in Rmarkdown format or regular markdown? default: FALSE, regular markdown
 
 ## Value
 
@@ -266,20 +252,11 @@ This is a wrapper to combine the Rd files of a package source or binary
 ## Usage
 
 ```r
-ReferenceManual(
-  pkg = getwd(),
-  outdir = getwd(),
-  front.matter = "",
-  toc.matter = "<!-- toc -->",
-  date.format = "%B %d, %Y",
-  verbose = FALSE,
-  title.level = 1,
-  run.examples = FALSE,
-  skip.topics = NULL,
-  topic.groups = NULL,
-  sepexported = FALSE,
-  man_file = NULL
-)
+ReferenceManual(pkg = getwd(), outdir = getwd(), man_file = NULL,
+  front.matter = "", toc.matter = "<!-- toc -->",
+  date.format = "%B %d, %Y", verbose = FALSE, title.level = 1,
+  run.examples = FALSE, skip.topics = NULL, topic.groups = NULL,
+  sepexported = FALSE)
 ```
 
 
@@ -289,6 +266,7 @@ Argument      |Description
 ------------- |----------------
 `pkg`     |     Full path to package directory. Default value is the working directory. Alternatively, a package name can be passed. If this is the case, [`find.package`](#find.package) is applied.
 `outdir`     |     Output directory where the reference manual markdown shall be written to.
+`man_file`     |     Character. name of output file.  Default Reference_Manual_pkgname.md
 `front.matter`     |     String with yaml-style heading of markdown file.
 `toc.matter`     |     String providing the table of contents. This is not auto-generated. The default value is a HTML comment, used by gitbook plugin [toc](https://www.npmjs.com/package/gitbook-plugin-toc) .
 `date.format`     |     Date format that shall be written to the beginning of the reference manual. If `NULL` , no date is written. Otherwise, provide a valid format (e.g. `%Y-%m-%d` ), see Details in [strptime](#strptime) .
@@ -297,7 +275,6 @@ Argument      |Description
 `run.examples`     |     Logical. Whether or not to run examples.
 `skip.topics`     |     Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.
 `topic.groups`     |     Named list of vectors of topics in each topic group.  The group names should be the names of the list.
-`man_file`     |     Character. name of output file.  Default Reference_Manual_pkgname.md
 `sepxported`     |     Logical. Separate exported and internal objects. Sets `topic.groups` to be "Exported" and "Internal"
 
 ## Seealso
@@ -323,6 +300,55 @@ out_dir = "/var/www/html/R_Web_app/md/"
 ## ReferenceManual(pkg = pkg_dir, outdir = out_dir)
 ```
 
+
+
+
+
+# `render_manual_github`
+
+Render manual as a github document
+
+## Description
+
+Render manual file, as produced by [ReferenceManual](#referencemanual) , as a github document.
+
+
+## Usage
+
+```r
+render_manual_github(rmd_man_file, man_file = NULL, outdir = getwd(),
+  pkg = getwd(), title = NULL, toc = FALSE, toc_depth = 2,
+  toplinks = FALSE, knitr_opts_chunk = list(tidy = TRUE), ...)
+```
+
+
+## Arguments
+
+Argument      |Description
+------------- |----------------
+`rmd_man_file`     |     input .Rmd file - usually output of ReferenceManual.  See Details section.
+`man_file`     |     output .md file - final md file formatted as gfm.  If NULL, will be same as `rmd_man_file` with ".md" extension.
+`outdir`     |     output directory
+`pkg`     |     package name
+`title`     |     title of manual.  If NULL, set to "Package 'pkg name'"
+`toc`     |     logical. whether or not table of contents should be added.  If `FALSE` , `toc_depth` and `toplinks` will be ignored.
+`toc_depth`     |     table of contents heading depth
+`toplinks`     |     logical. whether links to the top of the table of contents should be included at each topic header.
+`knitr_opts_chunk`     |     options for [`knitr::opts_chunk`](#knitr::optschunk)
+`...`     |     other arguments passed to [`rmarkdown::render`](#rmarkdown::render)
+
+## Details
+
+You will need to have [rmarkdown-package](#rmarkdown-package) installed.  If the `rmd_man_file`
+ file contains yaml front matter (as parsed by
+[`yaml_front_matter`](#yamlfrontmatter)), then none of the options besides the filenames,
+and output directory are used (though you can still pass arguments to `rmarkdown::render`
+with `...`).
+
+
+## Value
+
+value of running `rmarkdown::render`
 
 
 

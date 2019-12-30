@@ -179,7 +179,103 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
     }
 
   }
-
   invisible(man_file)
+}
+
+
+#' Render manual as a github document
+#'
+#' @description Render manual file, as produced by \link{ReferenceManual}, as a github document.
+#'
+#' @param rmd_man_file input .Rmd file - usually output of ReferenceManual.  See Details section.
+#' @param man_file output .md file - final md file formatted as gfm.  If NULL, will be
+#' same as \code{rmd_man_file} with ".md" extension.
+#' @param outdir output directory
+#' @param pkg package name
+#' @param toc logical. whether or not table of contents should be added.  If \code{FALSE},
+#'  \code{toc_depth} and \code{toplinks} will be ignored.
+#' @param toc_depth table of contents heading depth
+#' @param toplinks logical. whether links to the top of the table of contents should be included
+#' at each topic header.
+#' @param title  title of manual.  If NULL, set to "Package 'pkg name'"
+#' @param knitr_opts_chunk options for \code{\link[knitr:opts_chunk]{knitr::opts_chunk}}
+#' @param ... other arguments passed to \code{\link[rmarkdown:render]{rmarkdown::render}}
+#'
+#' @return value of running \code{rmarkdown::render}
+#' @export
+#'
+#' @details
+#' You will need to have \link[rmarkdown]{rmarkdown-package} installed.  If the \code{rmd_man_file}
+#'  file contains yaml front matter (as parsed by
+#' \code{\link[rmarkdown]{yaml_front_matter}}), then none of the options besides the filenames,
+#' and output directory are used (though you can still pass arguments to \code{rmarkdown::render}
+#' with \code{...}).
+#'
+#'
+render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd(), pkg = getwd(), title = NULL, toc=FALSE, toc_depth=2, toplinks=FALSE, knitr_opts_chunk = list(tidy=TRUE), ...) {
+
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) {
+    stop("Package \"rmarkdown\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  clean <- with(list(...), get0("clean", inherits=F, ifnotfound = T))
+  if (is.null(man_file)) man_file <- paste0(gsub(".Rmd$", "", basename(rmd_man_file), perl=T, ignore.case = T), ".md")
+  man_file <- file.path(outdir,man_file)
+  input <- readLines(rmd_man_file)
+
+  ## fix internal reference links
+  newlink <- function(x) {
+    if (length(x) < 1) return(x)
+    y <- unlist(regmatches(x, regexec("\\(\\#[\\w\\.]+?\\)", x, perl=T)))
+    newy <- gsub('\\.', '', y)
+    return(sapply(1:length(x), function(i) sub(y[i], newy[i], x[i], fixed=T)))
+  }
+  pat <- "\\[`*([\\w\\.]+?)`*\\]\\(\\#[\\w\\.]+?\\)"
+  regmatches(input, gregexpr(pat, input, perl=T)) <- lapply(regmatches(input, gregexpr(pat,  input, perl=T)), newlink)
+
+  no_yaml <- isFALSE(length(rmarkdown::yaml_front_matter(rmd_man_file)) > 0)
+
+  if (no_yaml) {
+    v1 <- grep("DESCRIPTION", input)[1]
+    v2 <- grep("```", input)[2]
+    date <- input[v1-2]
+    include_before <- file.path(outdir, paste0(basename(rmd_man_file), ".includes.md"))
+    writeLines(input[(v1+1):v2], include_before)
+    on.exit(unlink(include_before))
+    toc_title <- gsub("DESCRIPTION", "R topics documented:", input[v1])
+    input <- input[-((v1-2):v2)]
+  }
+
+
+  if (no_yaml & toc & toplinks) {
+    v <- grep("^#+ `.+?`$", input, perl=T)
+    input[v] <- paste0("<small>[top](#r-topics-documented)</small>\n\n", input[v],  sep="")
+  }
+
+
+  temprmd <- file.path(outdir, paste0(basename(rmd_man_file), ".temp.Rmd"))
+  writeLines(input, temprmd)
+  message("Temporary Rmd file: ", temprmd)
+
+  if (!no_yaml) {
+    github_format <- rmarkdown::github_document(html_preview=!clean)
+  } else {
+    oldoptschunk <- opts_chunk$get()
+    on.exit(opts_chunk$set(oldoptschunk), add = T)
+    opts_chunk$set(knitr_opts_chunk)
+    if (is.null(title)) title <- paste0("Package '", basename(pkg), "'")
+    github_format <- rmarkdown::github_document(toc=toc, toc_depth = toc_depth,
+                                md_extensions = "+gfm_auto_identifiers-smart",
+                                pandoc_args = c("-M", paste0("title=", title),
+                                                "-V", paste0('toc-title=', toc_title),
+                                                "-M", paste0("date=", date)),
+                                html_preview = !clean, includes = rmarkdown::includes(before_body = include_before))
+    github_format$pandoc$args[grep("--template", github_format$pandoc$args) + 1] <- system.file("rmd", "template.md", package="Rd2md", mustWork = T)
+  }
+
+  rout <- rmarkdown::render(temprmd, output_file = man_file, output_format = github_format, ...)
+
+  if (clean) unlink(temprmd)
 
 }
