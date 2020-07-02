@@ -7,8 +7,7 @@
 ReferenceManual(pkg = getwd(), outdir = getwd(), man_file = NULL,
   front.matter = "", toc.matter = "<!-- toc -->",
   date.format = "\%B \%d, \%Y", verbose = FALSE, title.level = 1,
-  run.examples = FALSE, skip.topics = NULL, topic.groups = NULL,
-  sepexported = FALSE)
+  skip.topics = NULL, topic.groups = NULL, sepexported = FALSE, ...)
 }
 \arguments{
 \item{pkg}{Full path to package directory. Default value is the working directory.
@@ -34,13 +33,13 @@ Otherwise, provide a valid format (e.g. \code{\%Y-\%m-\%d}), see Details in \lin
 more, and subsection level 2 more.  Otherwise, section.level will be the same and subsection.level only one
 more.}
 
-\item{run.examples}{Logical. Whether or not to run examples.}
-
 \item{skip.topics}{Character. Functions, methods, objects, etc to skip.  Should be prefix of
 .rd file.}
 
 \item{topic.groups}{Named list of vectors of topics in each topic group.  The group names should be
 the names of the list.}
+
+\item{...}{parameters to pass to \link{Rd2markdown}}
 
 \item{sepxported}{Logical. Separate exported and internal objects. Sets \code{topic.groups} to be
 "Exported" and "Internal"}

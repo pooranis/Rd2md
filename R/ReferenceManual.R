@@ -18,13 +18,13 @@
 #' @param title.level Integer.  Title header level. If including exported sections, section.level will be one
 #' more, and subsection level 2 more.  Otherwise, section.level will be the same and subsection.level only one
 #' more.
-#' @param run.examples Logical. Whether or not to run examples.
 #' @param skip.topics Character. Functions, methods, objects, etc to skip.  Should be prefix of
 #' .rd file.
 #' @param topic.groups Named list of vectors of topics in each topic group.  The group names should be
 #'  the names of the list.
 #' @param sepxported Logical. Separate exported and internal objects. Sets \code{topic.groups} to be
 #' "Exported" and "Internal"
+#' @param ... parameters to pass to \link{Rd2markdown}
 #'
 #' @references Murdoch, D. (2010). \href{http://developer.r-project.org/parseRd.pdf}{Parsing Rd files}
 #' @seealso Package \href{https://github.com/jbryer/Rd2markdown}{Rd2markdown} by jbryer
@@ -49,10 +49,10 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
                             , date.format = "%B %d, %Y"
                             , verbose = FALSE
                             , title.level = 1
-                            , run.examples = FALSE
                             , skip.topics = NULL
                             , topic.groups = NULL
-                            , sepexported = FALSE) {
+                            , sepexported = FALSE
+                            , ...) {
   # VALIDATION
   pkg <- as.character(pkg)
   if (length(pkg) != 1) stop("Please provide only one package at a time.")
@@ -135,7 +135,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   ## if package Rd exists put it first
   packagerd <- which(topics == paste0(pkg_name, "-package"))
   if (length(packagerd) == 1) {
-    packagerdresults <- Rd2markdown(rdfile=rd_files[packagerd], outfile=man_file, append=TRUE, section = title.header, subsection = subsection.header, run.examples=run.examples)
+    packagerdresults <- Rd2markdown(rdfile=rd_files[packagerd], outfile=man_file, append=TRUE, section = title.header, subsection = subsection.header, ...)
     topics <- topics[-packagerd]
     rd_files <- rd_files[-packagerd]
   }
@@ -156,7 +156,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 
       for(i in tgt) {#i=1
         if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
       }
       topicnums <- setdiff(topicnums, tgt)
     }
@@ -166,16 +166,16 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
       cat(title.header, " Other\n", file=man_file, append=TRUE)
       for(i in 1:length(topicnums)) {#i=1
         if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
       }
     }
-  ## No groups
+    ## No groups
   } else {
 
     # Parse rd files and add to ReferenceManual
     for(i in 1:length(topics)) {
       if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-      results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, run.examples=run.examples)
+      results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
     }
 
   }
@@ -199,6 +199,8 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 #' at each topic header.
 #' @param title  title of manual.  If NULL, set to "Package 'pkg name'"
 #' @param knitr_opts_chunk options for \code{\link[knitr:opts_chunk]{knitr::opts_chunk}}
+#' @param nocodelinks logical.  if TRUE, will remove code tags from links that have them.
+#' improves conversion to .rst
 #' @param ... other arguments passed to \code{\link[rmarkdown:render]{rmarkdown::render}}
 #'
 #' @return value of running \code{rmarkdown::render}
@@ -212,13 +214,13 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 #' with \code{...}).
 #'
 #'
-render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd(), pkg = getwd(), title = NULL, toc=FALSE, toc_depth=2, toplinks=FALSE, knitr_opts_chunk = list(tidy=TRUE), ...) {
+render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd(), pkg = getwd(), title = NULL, toc=FALSE, toc_depth=2, author=NULL, toplinks=FALSE, knitr_opts_chunk = list(tidy=TRUE), nocodelinks=F, ...) {
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop("Package \"rmarkdown\" needed for this function to work. Please install it.",
          call. = FALSE)
   }
-
+  pkg <- get0("pkg", inherits = F)
   clean <- with(list(...), get0("clean", inherits=F, ifnotfound = T))
   if (is.null(man_file)) {
     man_file <- paste0(gsub(".Rmd$", "", basename(rmd_man_file), perl=T, ignore.case = T), ".md")
@@ -236,11 +238,22 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
   ## fix internal reference links
   newlink <- function(x) {
     if (length(x) < 1) return(x)
-    y <- unlist(regmatches(x, regexec("\\(\\#[\\w\\.]+?\\)", x, perl=T)))
+    y <- unlist(regmatches(x, regexec("\\(\\#[\\w\\.-]+?\\)", x, perl=T)))
     newy <- gsub('\\.', '', y)
-    return(sapply(1:length(x), function(i) sub(y[i], newy[i], x[i], fixed=T)))
+    x <- sapply(1:length(x), function(i) sub(y[i], newy[i], x[i], fixed=T))
+
+    if (nocodelinks) {
+      ## remove backticks from link text
+      y <- unlist(regmatches(x, regexec("\\[`+[\\w\\.-]+?`+\\]", x, perl=T)))
+      if (length(y > 0)) {
+        newy <- gsub('`', '', y)
+        x <- sapply(1:length(x), function(i) sub(y[i], newy[i], x[i], fixed=T))
+      }
+    }
+
+    return(x)
   }
-  pat <- "\\[`*([\\w\\.]+?)`*\\]\\(\\#[\\w\\.]+?\\)"
+  pat <- "\\[`*([\\w\\.-]+?)`*\\]\\(\\#[\\w\\.-]+?\\)"
   regmatches(input, gregexpr(pat, input, perl=T)) <- lapply(regmatches(input, gregexpr(pat,  input, perl=T)), newlink)
 
   no_yaml <- isFALSE(length(rmarkdown::yaml_front_matter(rmd_man_file)) > 0)
@@ -251,7 +264,7 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
     date <- input[v1-2]
     include_before <- paste0(basename(rmd_man_file), ".includes.md")
     writeLines(input[(v1+1):v2], include_before)
-    on.exit(unlink(include_before), add=T, after=F)
+    if (clean) on.exit(unlink(include_before), add=T, after=F)
     toc_title <- gsub("DESCRIPTION", "R topics documented:", input[v1])
     input <- input[-((v1-2):v2)]
   }
@@ -275,11 +288,12 @@ render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd()
     opts_chunk$set(knitr_opts_chunk)
     if (is.null(title)) title <- paste0("Package '", basename(pkg), "'")
     github_format <- rmarkdown::github_document(toc=toc, toc_depth = toc_depth,
-                                md_extensions = "+gfm_auto_identifiers-smart",
-                                pandoc_args = c("-M", paste0("title=", title),
-                                                "-V", paste0('toc-title=', toc_title),
-                                                "-M", paste0("date=", date)),
-                                html_preview = !clean, includes = rmarkdown::includes(before_body = include_before))
+                                                md_extensions = "+gfm_auto_identifiers-smart",
+                                                pandoc_args = c("-M", paste0("title=", title),
+                                                                "-V", paste0('toc-title=', toc_title),
+                                                                "-M", paste0("date=", date),
+                                                                "-M", paste0("author=", author)),
+                                                html_preview = !clean, includes = rmarkdown::includes(before_body = include_before))
     github_format$pandoc$args[grep("--template", github_format$pandoc$args) + 1] <- system.file("rmd", "template.md", package="Rd2md", mustWork = T)
   }
 

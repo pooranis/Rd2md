@@ -5,7 +5,8 @@
 \title{Rd file to markdown}
 \usage{
 Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
-  subsection = "##", run.examples = FALSE, Rmd = F)
+  subsection = "##", run.examples = FALSE, Rmd = F, code.headings = T,
+  topic.section.heading = T)
 }
 \arguments{
 \item{rdfile}{Filepath to an .Rd file or an \code{Rd} object to parse.}
@@ -19,6 +20,10 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 \item{subsection}{header tag.}
 
 \item{run.examples}{logical. should examples be run?}
+
+\item{code.headings}{logical. topic headings formatted as code? backticks in topic headings.}
+
+\item{topic.section.heading}{logical. sections within topic formatted as headings?}
 }
 \value{
 Parsed Rd as named list

@@ -6,7 +6,8 @@
 \usage{
 render_manual_github(rmd_man_file, man_file = NULL, outdir = getwd(),
   pkg = getwd(), title = NULL, toc = FALSE, toc_depth = 2,
-  toplinks = FALSE, knitr_opts_chunk = list(tidy = TRUE), ...)
+  author = NULL, toplinks = FALSE, knitr_opts_chunk = list(tidy = TRUE),
+  nocodelinks = F, ...)
 }
 \arguments{
 \item{rmd_man_file}{input .Rmd file - usually output of ReferenceManual.  See Details section.}
@@ -29,6 +30,9 @@ same as \code{rmd_man_file} with ".md" extension.}
 at each topic header.}
 
 \item{knitr_opts_chunk}{options for \code{\link[knitr:opts_chunk]{knitr::opts_chunk}}}
+
+\item{nocodelinks}{logical.  if TRUE, will remove code tags from links that have them.
+improves conversion to .rst}
 
 \item{...}{other arguments passed to \code{\link[rmarkdown:render]{rmarkdown::render}}}
 }

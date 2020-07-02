@@ -8,6 +8,8 @@
 #' @param section header tag.
 #' @param subsection header tag.
 #' @param run.examples logical. should examples be run?
+#' @param code.headings logical. topic headings formatted as code? backticks in topic headings.
+#' @param topic.section.heading logical. sections within topic formatted as headings?
 #' @return Parsed Rd as named list
 #' @examples
 #' ## give a markdown source file
@@ -16,7 +18,7 @@
 #' outfile = "/var/www/html/R_Web_app/md/myfun.md"
 #' ## create markdown
 #' ## Rd2markdown(rdfile = rdfile, outfile = outfile)
-Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE,Rmd=F) {
+Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE,Rmd=F, code.headings=T, topic.section.heading = T) {
 	# VALIDATION
 	append <- as.logical(append)
 	if (length(append) != 1) stop("Please provide append as single logical value.")
@@ -48,6 +50,16 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 	# takes as input an "Rd" object
 	results <- parseRd(rd)
 
+	## set subsection heading function
+	print.subsection <- function(text, outfile) {
+	  if (topic.section.heading) {
+	    cat(paste(subsection, text), file=outfile, append=TRUE)
+	  } else {
+	    cat(paste0("**", text, "**"), file=outfile, append=TRUE)
+	  }
+	  cat(section.sep, file=outfile, append=TRUE)
+	}
+
 	if (all(c("name","title") %in% names(results))) {
 		filename <- paste0(results$name, ".", file.ext)
 		results$filename <- filename
@@ -57,7 +69,12 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 		cat("", file=outfile, append=append)
 
 		# HEADING
-		cat(paste0(section, " `", results$name, "`"), section.sep, file=outfile, append=TRUE, sep="")
+		if (code.headings) {
+		  cat(paste0(section, " `", results$name, "`"), section.sep, file=outfile, append=TRUE, sep="")
+		} else {
+		  cat(paste(section, results$name), section.sep, file=outfile, append=TRUE, sep="")
+		}
+
 		# title as normal text
 		cat(results$title, file=outfile, append=TRUE)
 		cat(section.sep, file=outfile, append=TRUE)
@@ -67,8 +84,9 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 		for (i in sections.print[!sections.print %in% c("name","title")]) {
 			if (i %in% names(results)) {
 				if (i == "examples") {
-					cat(paste(subsection, "Examples"), file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
+				  print.subsection("Examples", outfile=outfile)
+					# cat(paste(subsection, "Examples"), file=outfile, append=TRUE)
+					# cat(section.sep, file=outfile, append=TRUE)
 
 				# EXAMPLES
 				  if (run.examples) {
@@ -84,8 +102,9 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 				  }
 				  cat(paste0(results$examples), "\n```", "\n\n", file=outfile, append=TRUE, sep="")
 				} else if (i %in% c("usage")) {
-					cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
+				  print.subsection(simpleCap(i), outfile)
+					# cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
+					# cat(section.sep, file=outfile, append=TRUE)
 					if (Rmd) {
 					  cat("```{r, eval=FALSE}\n",file=outfile, append=TRUE)
 					} else {
@@ -95,16 +114,18 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 					cat("\n```\n", file=outfile, append=T)
 #					cat(section.sep, file=outfile, append=TRUE)
 				} else if (i %in% c("arguments")) {
-					cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
-					cat(section.sep, file=outfile, append=TRUE)
+				  print.subsection(simpleCap(i), outfile)
+					# cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
+					# cat(section.sep, file=outfile, append=TRUE)
 					# Prepare table with arguments
 					cat("Argument      |Description\n", file=outfile, append=TRUE)
 					cat("------------- |----------------\n", file=outfile, append=TRUE)
 					cat(paste0("`", names(results[[i]]), "`", "     |     ", results[[i]], collapse="\n"), file=outfile, append=TRUE)
 
 				} else {
-				  cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
-				  cat(section.sep, file=outfile, append=TRUE)
+				  print.subsection(simpleCap(i), outfile)
+				  # cat(paste(subsection, simpleCap(i)), file=outfile, append=TRUE)
+				  # cat(section.sep, file=outfile, append=TRUE)
 					cat(paste0(results[[i]], collapse="\n"), file=outfile, append=TRUE, sep="\n")
 				}
 			  cat(section.sep, file=outfile, append=TRUE)
