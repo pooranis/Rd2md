@@ -19,9 +19,14 @@
 #' ## create markdown
 #' ## Rd2markdown(rdfile = rdfile, outfile = outfile)
 Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection = "##", run.examples = FALSE,Rmd=F, code.headings=T, topic.section.heading = T) {
+  verbose <- getOption("verbose")
 	# VALIDATION
 	append <- as.logical(append)
 	if (length(append) != 1) stop("Please provide append as single logical value.")
+	if (is.list(rdfile)) {
+	  if (length(rdfile) > 1) stop("Please provide rdfile as single character value (vector with rd text).")
+	  rdfile <- rdfile[[1]]
+	}
 	if (is.character(rdfile)) if ((length(rdfile) != 1)) stop("Please provide rdfile as single character value (file path with extension).")
 	outfile <- as.character(outfile)
 	if (length(outfile) != 1) stop("Please provide outfile as single character value (file path with extension).")
@@ -30,7 +35,7 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
 	}
 
 	type <- ifelse(inherits(rdfile, "Rd"), "bin", "src")
-
+	if (verbose) message(class(rdfile))
 	# Global definitions for file parsing
 	file.ext <- "md"
 	section.sep <- "\n\n"

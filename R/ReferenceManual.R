@@ -121,6 +121,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   # RD files
   results <- list()
 
+  if (verbose) message(file.path(pkg_path, mandir, pkg_name))
   if (type == "src") {
     rd_files <- list.files(file.path(pkg_path, mandir), full.names = TRUE)
     topics <- gsub(".rd","",gsub(".Rd","",basename(rd_files)))
@@ -133,6 +134,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
   }
 
   ## if package Rd exists put it first
+  if (verbose) message(class(rd_files[[1]]))
   packagerd <- which(topics == paste0(pkg_name, "-package"))
   if (length(packagerd) == 1) {
     packagerdresults <- Rd2markdown(rdfile=rd_files[packagerd], outfile=man_file, append=TRUE, section = title.header, subsection = subsection.header, ...)
