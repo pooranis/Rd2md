@@ -126,11 +126,11 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
     rd_files <- list.files(file.path(pkg_path, mandir), full.names = TRUE)
     topics <- gsub(".rd","",gsub(".Rd","",basename(rd_files)))
     v <- which(!(topics %in% skip.topics))
-    topics <- topics[v]
+#    topics <- topics[v]
     rd_files <- rd_files[v]
   } else {
     rd_files <- fetchRdDB(file.path(pkg_path, mandir, pkg_name))
-    topics <- names(rd_files)
+#    topics <- names(rd_files)
   }
 
   rd_text <- sapply(rd_files, parse_unknown_rd)
