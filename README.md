@@ -1,5 +1,17 @@
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/Rd2md)](https://cran.r-project.org/package=Rd2md)
+This is my fork of [quants-ch/Rd2md](https://github.com/quantsch/Rd2md)
 
+# Install
+```
+remotes::install_github("pooranis/Rd2md")
+```
+
+# Meta!
+
+[Reference Manual for Rd2md package](Reference_Manual_Rd2md.md)
+
+The original README is below:
+
+---
 
 # Installation
 
@@ -30,7 +42,3 @@ ReferenceManual(pkg, outdir)
 ```
 
 Please read the introduction vignette for further information and consult the available function docs.
-
-# Meta!
-
-[Reference Manual for Rd2md package](Reference_Manual_Rd2md.md)

@@ -2,6 +2,7 @@ Package: Rd2md
 Title: Markdown Reference Manuals
 Version: 0.0.4
 Authors@R: person("Julian", "Busch", email = "jb@quants.ch", role = c("aut", "cre"))
+Maintainer: Poorani Subramanian <email@example.com>
 Description: The native R functionalities only allow PDF exports of reference manuals. This shall be extended by converting the package documentation files into markdown files and combining them into a markdown version of the package reference manual.
 Depends:
     R (>= 3.2.3)
@@ -14,6 +15,7 @@ Suggests:
     rmarkdown,
     devtools
 License: GPL
+URL: https://github.com/pooranis/Rd2md
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
