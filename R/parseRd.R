@@ -12,42 +12,42 @@
 #' ## rd = tools::parse_Rd(rdfile)
 #' ## parseRd(rd)
 parseRd <- function(rd) {
+  verbose <- getOption("verbose")
+  # VALIDATION
+  if (!("Rd" %in% class(rd))) stop("Please provide Rd object to parse.")
 
-	# VALIDATION
-	if (!("Rd" %in% class(rd))) stop("Please provide Rd object to parse.")
+  tags <- RdTags(rd)
+  results <- list()
 
-	tags <- RdTags(rd)
-	results <- list()
+  if(!("\\name" %in% tags)) {
+    return(results)
+  }
 
-	if(!("\\name" %in% tags)) {
-		return(results)
-	}
+  for (i in sections) {
+    if (i %in% tags) {
+      # Handle \argument section separately
+      if (i == "\\arguments") {
+        args <- rd[[which(tags == "\\arguments")]]
+        args.tags <- RdTags(args)
+        args <- args[which(args.tags == "\\item")]
+        params <- character()
+        for(i in seq_along(args)) {
+          param.name <- as.character(args[[i]][[1]])
+          param.desc <- paste(sapply(args[[i]][[2]],
+                                     FUN=function(x) { parseTag(x) }), collapse=" ")
+          params <- c(params, param.desc)
+          names(params)[length(params)] <- param.name
+        }
+        results$arguments <- params
 
-	for (i in sections) {
-		if (i %in% tags) {
-			# Handle \argument section separately
-			if (i == "\\arguments") {
-				args <- rd[[which(tags == "\\arguments")]]
-				args.tags <- RdTags(args)
-				args <- args[which(args.tags == "\\item")]
-				params <- character()
-				for(i in seq_along(args)) {
-					param.name <- as.character(args[[i]][[1]])
-					param.desc <- paste(sapply(args[[i]][[2]],
-							FUN=function(x) { parseTag(x) }), collapse=" ")
-					params <- c(params, param.desc)
-					names(params)[length(params)] <- param.name
-				}
-				results$arguments <- params
+      } else if (i %in% c("\\usage")) {
+        results[["usage"]] <- paste0(trim(paste(sapply(rd[[which(tags == "\\usage")]],
+                                                       FUN=function(x) {
+                                                         if (x[1]=="\n") x[1] <- "" # exception handling
+                                                         parseTag(x, stripNewline=FALSE, stripWhite=FALSE, stripTab=FALSE)
 
-			} else if (i %in% c("\\usage")) {
-				results[["usage"]] <- paste0(trim(paste(sapply(rd[[which(tags == "\\usage")]],
-							   FUN=function(x) {
-									if (x[1]=="\n") x[1] <- "" # exception handling
-							   	parseTag(x, stripNewline=FALSE, stripWhite=FALSE, stripTab=FALSE)
-
-							   }), collapse='')))
-			} else if (i == '\\docType') {
+                                                       }), collapse='')))
+      } else if (i == '\\docType') {
         dt <- rd[[which(tags == '\\docType')]]
         if (dt == 'package') {
           name <- rd[[which(tags == '\\name')]]
@@ -57,25 +57,39 @@ parseRd <- function(rd) {
 
         }
 
-			} else if (i %in% c("\\examples", "\\example")) {
-			  key <- substr(i, 2, nchar(i))
-			  results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
-			    parseTag(x, stripNewline=FALSE)
-			  } ), collapse=""))
+      } else if (i %in% c("\\examples", "\\example")) {
+        key <- substr(i, 2, nchar(i))
+        results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
+          parseTag(x, stripNewline=FALSE)
+        } ), collapse=""))
 
-			} else if (i %in% c("\\references", "\\details")) {
-			  key <- substr(i, 2, nchar(i))
-			  results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
-			    parseTag(x, stripNewline=FALSE, stripWhite = F)
-			  } ), collapse=""))
-			} else if (i %in% tags) {
-				key <- substr(i, 2, nchar(i))
-				results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
-				  parseTag(x, stripNewline=FALSE)
-				} ), collapse=" "))
-			}
-		}
-	}
+      } else if (i %in% c("\\references", "\\details")) {
+        key <- substr(i, 2, nchar(i))
+        results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
+          parseTag(x, stripNewline=FALSE, stripWhite = F)
+        } ), collapse=""))
+      } else if (i %in% c("\\alias")) {
+        key <- substr(i, 2, nchar(i))
+        j <- which(tags==i)
+        my.alias <- trim(sapply(rd[which(tags==i)], FUN=function(x) {
+          parseTag(x)
+        } ))
+        if (!grepl("-package$", rd[[which(tags == '\\name')]], perl = T)) {
+          packname <- grep("-package", my.alias)
+          if (length(packname) > 0) {
+            rd[[which(tags == '\\name')]] <- my.alias[packname]
+            results[["name"]] <- my.alias[packname]
+          }
+        }
+        results[[key]] <- my.alias
+      } else if (i %in% tags) {
+        key <- substr(i, 2, nchar(i))
+        results[[key]] <- trim(paste(sapply(rd[[which(tags==i)[1]]], FUN=function(x) {
+          parseTag(x, stripNewline=FALSE)
+        } ), collapse=" "))
+      }
+    }
+  }
 
-	invisible(results)
+  invisible(results)
 }

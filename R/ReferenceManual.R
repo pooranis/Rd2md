@@ -133,13 +133,17 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
     topics <- names(rd_files)
   }
 
+  rd_text <- sapply(rd_files, parse_unknown_rd)
+  topics <- unname(sapply(rd_text, "[[", "name"))
+
   ## if package Rd exists put it first
-  if (verbose) message(class(rd_files[[1]]))
+  if (verbose) message(class(rd_files))
   packagerd <- which(topics == paste0(pkg_name, "-package"))
   if (length(packagerd) == 1) {
-    packagerdresults <- Rd2markdown(rdfile=rd_files[packagerd], outfile=man_file, append=TRUE, section = title.header, subsection = subsection.header, ...)
+    if(verbose) message(paste0("Writing topic: ", topics[packagerd], "\n"))
+    packagerdresults <- Rd2markdown(rdfile=rd_text[[packagerd]], outfile=man_file, append=TRUE, section = title.header, subsection = subsection.header, ...)
     topics <- topics[-packagerd]
-    rd_files <- rd_files[-packagerd]
+    rd_text <- rd_text[-packagerd]
   }
   ## Make topic group for exported and internal
   if (sepexported) {
@@ -158,7 +162,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 
       for(i in tgt) {#i=1
         if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
+        results[[i]] <- Rd2markdown(rdfile=rd_text[[i]], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
       }
       topicnums <- setdiff(topicnums, tgt)
     }
@@ -168,7 +172,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
       cat(title.header, " Other\n", file=man_file, append=TRUE)
       for(i in 1:length(topicnums)) {#i=1
         if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-        results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
+        results[[i]] <- Rd2markdown(rdfile=rd_text[[i]], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
       }
     }
     ## No groups
@@ -177,8 +181,10 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
     # Parse rd files and add to ReferenceManual
     for(i in 1:length(topics)) {
       if(verbose) message(paste0("Writing topic: ", topics[i], "\n"))
-      results[[i]] <- Rd2markdown(rdfile=rd_files[i], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
+      results[[i]] <- Rd2markdown(rdfile=rd_text[[i]], outfile=man_file, append=TRUE, section = section.header, subsection = subsection.header, ...)
     }
+
+ #   topic.names <- sapply()
 
   }
   invisible(man_file)
