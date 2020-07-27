@@ -120,21 +120,19 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 
   # RD files
   results <- list()
-
   if (verbose) message(file.path(pkg_path, mandir, pkg_name))
   if (type == "src") {
     rd_files <- list.files(file.path(pkg_path, mandir), full.names = TRUE)
-    topics <- gsub(".rd","",gsub(".Rd","",basename(rd_files)))
-    v <- which(!(topics %in% skip.topics))
-#    topics <- topics[v]
-    rd_files <- rd_files[v]
   } else {
     rd_files <- fetchRdDB(file.path(pkg_path, mandir, pkg_name))
-#    topics <- names(rd_files)
   }
 
   rd_text <- sapply(rd_files, parse_unknown_rd)
   topics <- unname(sapply(rd_text, "[[", "name"))
+  v <- which(!(topics %in% skip.topics))
+  topics <- topics[v]
+  rd_text <- rd_text[v]
+
 
   ## if package Rd exists put it first
   if (verbose) message(class(rd_files))
