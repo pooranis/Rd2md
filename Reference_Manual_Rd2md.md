@@ -32,7 +32,7 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(old_usage = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 ```
 
 
@@ -184,7 +184,7 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 
 Argument      |Description
 ------------- |----------------
-`rdfile`     |     Filepath to an .Rd file or an `Rd` object to parse.
+`rdfile`     |     Filepath to an .Rd file or an `Rd` object to parse or an `Rd.list` object output from [`parse_unknown_rd`](#`parseunknownrd`)
 `outfile`     |     Filepath to output file (markdown file).
 `append`     |     If outfile exists, append to existing content.
 `section`     |     header tag.
