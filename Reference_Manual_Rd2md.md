@@ -2,7 +2,7 @@
 
 <!-- toc -->
 
-December 30, 2019
+July 26, 2020
 
 #  DESCRIPTION
 
@@ -32,7 +32,7 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(old_usage = TRUE)
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 ```
 
 
@@ -175,7 +175,8 @@ This function converts an Rd file into markdown format.
 
 ```r
 Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
-  subsection = "##", run.examples = FALSE, Rmd = F)
+  subsection = "##", run.examples = FALSE, Rmd = F, code.headings = T,
+  topic.section.heading = T)
 ```
 
 
@@ -189,6 +190,8 @@ Argument      |Description
 `section`     |     header tag.
 `subsection`     |     header tag.
 `run.examples`     |     logical. should examples be run?
+`code.headings`     |     logical. topic headings formatted as code? backticks in topic headings.
+`topic.section.heading`     |     logical. sections within topic formatted as headings?
 
 ## Value
 
@@ -255,8 +258,7 @@ This is a wrapper to combine the Rd files of a package source or binary
 ReferenceManual(pkg = getwd(), outdir = getwd(), man_file = NULL,
   front.matter = "", toc.matter = "<!-- toc -->",
   date.format = "%B %d, %Y", verbose = FALSE, title.level = 1,
-  run.examples = FALSE, skip.topics = NULL, topic.groups = NULL,
-  sepexported = FALSE)
+  skip.topics = NULL, topic.groups = NULL, sepexported = FALSE, ...)
 ```
 
 
@@ -272,9 +274,9 @@ Argument      |Description
 `date.format`     |     Date format that shall be written to the beginning of the reference manual. If `NULL` , no date is written. Otherwise, provide a valid format (e.g. `%Y-%m-%d` ), see Details in [strptime](#strptime) .
 `verbose`     |     If `TRUE` all messages and process steps will be printed
 `title.level`     |     Integer.  Title header level. If including exported sections, section.level will be one more, and subsection level 2 more.  Otherwise, section.level will be the same and subsection.level only one more.
-`run.examples`     |     Logical. Whether or not to run examples.
 `skip.topics`     |     Character. Functions, methods, objects, etc to skip.  Should be prefix of .rd file.
 `topic.groups`     |     Named list of vectors of topics in each topic group.  The group names should be the names of the list.
+`...`     |     parameters to pass to [Rd2markdown](#rd2markdown)
 `sepxported`     |     Logical. Separate exported and internal objects. Sets `topic.groups` to be "Exported" and "Internal"
 
 ## Seealso
@@ -318,7 +320,8 @@ Render manual file, as produced by [ReferenceManual](#referencemanual) , as a gi
 ```r
 render_manual_github(rmd_man_file, man_file = NULL, outdir = getwd(),
   pkg = getwd(), title = NULL, toc = FALSE, toc_depth = 2,
-  toplinks = FALSE, knitr_opts_chunk = list(tidy = TRUE), ...)
+  author = NULL, toplinks = FALSE, knitr_opts_chunk = list(tidy = TRUE),
+  nocodelinks = F, ...)
 ```
 
 
@@ -335,6 +338,7 @@ Argument      |Description
 `toc_depth`     |     table of contents heading depth
 `toplinks`     |     logical. whether links to the top of the table of contents should be included at each topic header.
 `knitr_opts_chunk`     |     options for [`knitr::opts_chunk`](#knitr::optschunk)
+`nocodelinks`     |     logical.  if TRUE, will remove code tags from links that have them. improves conversion to .rst
 `...`     |     other arguments passed to [`rmarkdown::render`](#rmarkdown::render)
 
 ## Details
