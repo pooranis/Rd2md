@@ -222,8 +222,19 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 #' with \code{...}).
 #'
 #'
-render_manual_github <- function(rmd_man_file, man_file = NULL, outdir = getwd(), pkg = getwd(), title = NULL, toc=FALSE, toc_depth=2, author=NULL, toplinks=FALSE, knitr_opts_chunk = list(tidy=TRUE), nocodelinks=F, ...) {
-
+render_manual_github <-
+  function(rmd_man_file,
+           man_file = NULL,
+           outdir = getwd(),
+           pkg = getwd(),
+           title = NULL,
+           toc = FALSE,
+           toc_depth = 2,
+           author = NULL,
+           toplinks = FALSE,
+           knitr_opts_chunk = list(tidy = TRUE),
+           nocodelinks = F,
+           ...) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop("Package \"rmarkdown\" needed for this function to work. Please install it.",
          call. = FALSE)
