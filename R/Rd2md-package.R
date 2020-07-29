@@ -2,9 +2,10 @@
 #' @docType package
 #' @title Reference Manual in Markdown
 #' @description Functions to parse and convert Rd files to markdown format reference manual.
-#' @author Julian Busch <jb@quants.ch>
+#' @author Poorani Subramanian
+#' @details Forked from Julian Busch <jb@quants.ch> Rd2md package.
 #' @keywords Rd help markdown reference manual
-#' @seealso \code{knitr}
+#' @seealso \href{https://CRAN.R-project.org/package=Rd2md}{Rd2md in CRAN}
 #' @import tools
 #' @import knitr
 NULL

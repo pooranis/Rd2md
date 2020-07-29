@@ -47,14 +47,19 @@ Reference Manual in Markdown
 Functions to parse and convert Rd files to markdown format reference manual.
 
 
+## Details
+
+Forked from Julian Busch <jb@quants.ch> Rd2md package.
+
+
 ## Seealso
 
-`knitr`
+[Rd2md in CRAN](https://CRAN.R-project.org/package=Rd2md)
 
 
 ## Author
 
-Julian Busch <jb@quants.ch>
+Poorani Subramanian
 
 
 

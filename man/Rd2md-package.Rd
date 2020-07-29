@@ -7,11 +7,14 @@
 \description{
 Functions to parse and convert Rd files to markdown format reference manual.
 }
+\details{
+Forked from Julian Busch <jb@quants.ch> Rd2md package.
+}
 \seealso{
-\code{knitr}
+\href{https://CRAN.R-project.org/package=Rd2md}{Rd2md in CRAN}
 }
 \author{
-Julian Busch <jb@quants.ch>
+Poorani Subramanian
 }
 \keyword{Rd}
 \keyword{help}
