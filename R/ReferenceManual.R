@@ -287,12 +287,14 @@ render_manual_github <-
     input <- input[-((v1-2):v2)]
   }
 
-
-  if (no_yaml & toc & toplinks) {
+  if (no_yaml & toplinks) {
     v <- grep("^#+ `.+?`$", input, perl=T)
-    input[v] <- paste0("<small>[top](#r-topics-documented)</small>\n\n", input[v],  sep="")
+    if (toc) {
+      input[v] <- paste0("<small>[top](#r-topics-documented)</small>\n\n", input[v],  sep="")
+    } else {
+      input[v] <- paste0("<small>[top](#)</small>\n\n", input[v],  sep="")
+    }
   }
-
 
   temprmd <- paste0(basename(rmd_man_file), ".temp.Rmd")
   writeLines(input, temprmd)
