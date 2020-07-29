@@ -10,7 +10,7 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 }
 \arguments{
 \item{rdfile}{Filepath to an .Rd file or an \code{Rd} object to parse or an \code{Rd.list} object output from
-\link{\code{parse_unknown_rd}}}
+\code{\link{parse_unknown_rd}}}
 
 \item{outfile}{Filepath to output file (markdown file).}
 

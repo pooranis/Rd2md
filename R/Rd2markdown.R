@@ -3,7 +3,7 @@
 #' @title Rd file to markdown
 #' @description This function converts an Rd file into markdown format.
 #' @param rdfile Filepath to an .Rd file or an \code{Rd} object to parse or an \code{Rd.list} object output from
-#' \link{\code{parse_unknown_rd}}
+#' \code{\link{parse_unknown_rd}}
 #' @param outfile Filepath to output file (markdown file).
 #' @param append If outfile exists, append to existing content.
 #' @param section header tag.
@@ -131,26 +131,3 @@ Rd2markdown <- function(rdfile, outfile, append=FALSE, section = "#", subsection
   invisible(results)
 }
 
-parse_unknown_rd <- function(rdfile) {
-  verbose <- getOption("verbose")
-  if (is.character(rdfile)) if ((length(rdfile) != 1)) stop("Please provide rdfile as single character value (file path with extension).")
-
-  type <- ifelse(inherits(rdfile, "character"), "src", "bin")
-
-
-  # Parse rd file
-  if (type == "src") {
-    rd <- parse_Rd(rdfile)
-  } else {
-    if (inherits(rdfile, "list"))  {
-      rdfile = rdfile[[1]]
-    }
-    rd <- rdfile
-    class(rd) <- "Rd"
-  }
- # if (verbose) print(rd)
-  # takes as input an "Rd" object
-  results <- parseRd(rd)
-  class(results) <- append(class(results), "Rd.list")
-  return(results)
-}

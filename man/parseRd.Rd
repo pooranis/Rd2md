@@ -19,7 +19,7 @@ contents of each element of the list will be converted to markdown.
 }
 \examples{
 ## rd source (from parse_Rd function of tools package)
-rdfile = "~/git/MyPackage/man/myfun.Rd"
+rdfile = '~/git/MyPackage/man/myfun.Rd'
 ## rd = tools::parse_Rd(rdfile)
 ## parseRd(rd)
 }

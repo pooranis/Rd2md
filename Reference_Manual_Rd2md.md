@@ -2,7 +2,7 @@
 
 <!-- toc -->
 
-July 26, 2020
+July 29, 2020
 
 #  DESCRIPTION
 
@@ -12,11 +12,13 @@ Title: Markdown Reference Manuals
 Version: 0.0.4
 Authors@R (parsed):
     * Julian Busch <jb@quants.ch> [aut, cre]
+Maintainer: Poorani Subramanian <email@example.com>
 Description: The native R functionalities only allow PDF exports of
     reference manuals. This shall be extended by converting the package
     documentation files into markdown files and combining them into a
     markdown version of the package reference manual.
 License: GPL
+URL: https://github.com/pooranis/Rd2md
 Depends:
     R (>= 3.2.3)
 Imports:
@@ -87,6 +89,38 @@ character vector with capitalized first letters
 
 
 
+# `parse_unknown_rd`
+
+parse unknown rdfile
+
+## Description
+
+[`ReferenceManual`](#referencemanual) looks for actual .rd files, or in the case of already
+ compiled package, will read from .rdb database.  This function checks whether rdfile is
+ a filename or a string from the .rdb database, and parses accordingly.
+
+
+## Usage
+
+```r
+parse_unknown_rd(rdfile)
+```
+
+
+## Arguments
+
+Argument      |Description
+------------- |----------------
+`rdfile`     |     either rd filename or entry in .rdb database (from [`fetchRdDB`](#fetchrddb) )
+
+## Value
+
+a named list with the parts of the Rd object that will be used for creating
+ a markdown file
+
+
+
+
 # `parseRd`
 
 Parse an Rd object
@@ -120,7 +154,7 @@ a named list with the parts of the Rd object that will be used for creating
 
 ```r
 ## rd source (from parse_Rd function of tools package)
-rdfile = "~/git/MyPackage/man/myfun.Rd"
+rdfile = '~/git/MyPackage/man/myfun.Rd'
 ## rd = tools::parse_Rd(rdfile)
 ## parseRd(rd)
 ```
@@ -184,7 +218,7 @@ Rd2markdown(rdfile, outfile, append = FALSE, section = "#",
 
 Argument      |Description
 ------------- |----------------
-`rdfile`     |     Filepath to an .Rd file or an `Rd` object to parse or an `Rd.list` object output from [`parse_unknown_rd`](#`parseunknownrd`)
+`rdfile`     |     Filepath to an .Rd file or an `Rd` object to parse or an `Rd.list` object output from [`parse_unknown_rd`](#parseunknownrd)
 `outfile`     |     Filepath to output file (markdown file).
 `append`     |     If outfile exists, append to existing content.
 `section`     |     header tag.
@@ -336,6 +370,7 @@ Argument      |Description
 `title`     |     title of manual.  If NULL, set to "Package 'pkg name'"
 `toc`     |     logical. whether or not table of contents should be added.  If `FALSE` , `toc_depth` and `toplinks` will be ignored.
 `toc_depth`     |     table of contents heading depth
+`author`     |     Author if not already in package help
 `toplinks`     |     logical. whether links to the top of the table of contents should be included at each topic header.
 `knitr_opts_chunk`     |     options for [`knitr::opts_chunk`](#knitr::optschunk)
 `nocodelinks`     |     logical.  if TRUE, will remove code tags from links that have them. improves conversion to .rst

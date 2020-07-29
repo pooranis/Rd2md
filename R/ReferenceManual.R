@@ -201,6 +201,7 @@ ReferenceManual <- function(pkg = getwd(), outdir = getwd()
 #' @param toc logical. whether or not table of contents should be added.  If \code{FALSE},
 #'  \code{toc_depth} and \code{toplinks} will be ignored.
 #' @param toc_depth table of contents heading depth
+#' @param author Author if not already in package help
 #' @param toplinks logical. whether links to the top of the table of contents should be included
 #' at each topic header.
 #' @param title  title of manual.  If NULL, set to "Package 'pkg name'"

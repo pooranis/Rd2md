@@ -26,6 +26,8 @@ same as \code{rmd_man_file} with ".md" extension.}
 
 \item{toc_depth}{table of contents heading depth}
 
+\item{author}{Author if not already in package help}
+
 \item{toplinks}{logical. whether links to the top of the table of contents should be included
 at each topic header.}
 
