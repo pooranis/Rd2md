@@ -4,11 +4,12 @@ $title$
 $endif$
 $if(author)$
 $author$
+
 $endif$
 $if(date)$
 $date$
-$endif$
 
+$endif$
 $for(header-includes)$
 $header-includes$
 

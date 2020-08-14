@@ -314,7 +314,7 @@ render_manual_github <-
                                                                 "-M", paste0("date=", date),
                                                                 "-M", paste0("author=", author)),
                                                 html_preview = !clean, includes = rmarkdown::includes(before_body = include_before))
-    github_format$pandoc$args[grep("--template", github_format$pandoc$args) + 1] <- system.file("rmd", "template.md", package="Rd2md", mustWork = T)
+    github_format$pandoc$args[grep("--template", github_format$pandoc$args) + 1] <- system.file("rmd", "github_template.md", package="Rd2md", mustWork = T)
   }
 
   rout <- rmarkdown::render(temprmd, output_file = man_file, output_format = github_format, ...)
